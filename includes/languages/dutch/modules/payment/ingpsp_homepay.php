@@ -1,3 +1,0 @@
-<?php
-define( 'MODULE_PAYMENT_INGPSP_HOMEPAY_TEXT_TITLE', 'Homepay' );
-define( 'MODULE_PAYMENT_INGPSP_HOMEPAY_TEXT_DESCRIPTION', 'Betalen met Homepay' );

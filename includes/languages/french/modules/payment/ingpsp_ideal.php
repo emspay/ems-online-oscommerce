@@ -1,4 +1,0 @@
-<?php
-define( 'MODULE_PAYMENT_INGPSP_IDEAL_TEXT_TITLE', 'iDEAL' );
-define( 'MODULE_PAYMENT_INGPSP_IDEAL_TEXT_DESCRIPTION', 'Payer avec iDEAL' );
-define( 'MODULE_PAYMENT_INGPSP_IDEAL_TEXT_SELECT_BANK', 'Choisissez votre banque' );

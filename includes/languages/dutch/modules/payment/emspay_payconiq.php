@@ -1,0 +1,3 @@
+<?php
+define( 'MODULE_PAYMENT_EMSPAY_PAYCONIQ_TEXT_TITLE', 'Payconiq' );
+define( 'MODULE_PAYMENT_EMSPAY_PAYCONIQ_TEXT_DESCRIPTION', 'Betalen met Payconiq' );

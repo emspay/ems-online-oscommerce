@@ -1,0 +1,3 @@
+<?php
+define( 'MODULE_PAYMENT_EMSPAY_HOMEPAY_TEXT_TITLE', 'Homepay' );
+define( 'MODULE_PAYMENT_EMSPAY_HOMEPAY_TEXT_DESCRIPTION', 'Payer par Homepay' );

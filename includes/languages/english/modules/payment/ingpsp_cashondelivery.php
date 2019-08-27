@@ -1,3 +1,0 @@
-<?php
-define( 'MODULE_PAYMENT_INGPSP_CASHONDELIVERY_TEXT_TITLE', 'Cash on delivery' );
-define( 'MODULE_PAYMENT_INGPSP_CASHONDELIVERY_TEXT_DESCRIPTION', 'Pay by cash on delivery' );
