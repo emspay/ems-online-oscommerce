@@ -102,7 +102,7 @@ class Ems_Services_Lib
         return $this->performApiCall("ideal/issuers/");
     }
 
-    public function emsCreateIdealOrder($orders_id, $total, $description, $customer, $return_url, $issuer_id )
+    public function emsCreateIdealOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $issuer_id )
     {
         $post = [
             "type"              => "payment",
@@ -132,13 +132,16 @@ class Ems_Services_Lib
             ],
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }
 
-    public function emsCreateKlarnaOrder($orders_id, $total, $description, $customer, $return_url, $order_lines)
+    public function emsCreateKlarnaOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $order_lines)
     {
         $post = [
             "type"              => "payment",
@@ -172,13 +175,16 @@ class Ems_Services_Lib
             'order_lines' => $order_lines,
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }
 
-    public function emsCreateCreditCardOrder($orders_id, $total, $description, $customer, $return_url )
+    public function emsCreateCreditCardOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
         $post = [
             "type"              => "payment",
@@ -207,13 +213,16 @@ class Ems_Services_Lib
             ],
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }
 
-    public function emsCreateBcOrder($orders_id, $total, $description, $customer, $return_url )
+    public function emsCreateBcOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
         $post = [
             "type"              => "payment",
@@ -242,13 +251,16 @@ class Ems_Services_Lib
             ],
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }
 
-    public function emsCreatePayconiqOrder($orders_id, $total, $description, $customer, $return_url)
+    public function emsCreatePayconiqOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url)
     {
         $post = [
             "type"              => "payment",
@@ -277,13 +289,16 @@ class Ems_Services_Lib
             ],
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }  
 
-    public function emsCreatePaypalOrder($orders_id, $total, $description, $customer, $return_url )
+    public function emsCreatePaypalOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
         $post = [
             "type"              => "payment",
@@ -312,13 +327,18 @@ class Ems_Services_Lib
             ],
         ];
 
+
+
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }        
 
-    public function emsCreateSofortOrder($orders_id, $total, $description, $customer, $return_url )
+    public function emsCreateSofortOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
         $post = [
             "type"              => "payment",
@@ -347,13 +367,16 @@ class Ems_Services_Lib
             ],
         ];
 
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
 
         return $result;
     }    
 
-    public function emsCreateBanktransferOrder($orders_id, $total, $description, $customer = array())
+    public function emsCreateBanktransferOrder($orders_id, $total, $description, $customer = array(), $webhook_url)
     {
         $post = [
             "type"         => "payment",
@@ -380,6 +403,9 @@ class Ems_Services_Lib
                 'plugin' => $this->plugin_version,
             ],
         ];
+
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);

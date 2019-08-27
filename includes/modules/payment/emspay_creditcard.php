@@ -113,12 +113,17 @@ class emspay_creditcard {
     // check if it's not english
     $language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
     if ($language_row['code'] == 'en')
-      $customer['locale'] = 'en_GB';    
+      $customer['locale'] = 'en_GB';
 
-    $emspay_order = $this->emspay->emsCreateCreditcardOrder( $insert_id, 
+    $webhook_url = null;
+    if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
+      $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
+
+    $emspay_order = $this->emspay->emsCreateCreditCardOrder( $insert_id, 
                                                              $order->info['total'], 
                                                              STORE_NAME . " " . $insert_id, 
                                                              $customer,
+                                                             $webhook_url,
                                                              tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' )
                                                             );
 

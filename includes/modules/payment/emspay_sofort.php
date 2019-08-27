@@ -115,10 +115,15 @@ class emspay_sofort {
     if ($language_row['code'] == 'en')
       $customer['locale'] = 'en_GB';
 
+    $webhook_url = null;
+    if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
+      $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
+
     $emspay_order = $this->emspay->emsCreateSofortOrder( $insert_id, 
                                                          $order->info['total'], 
                                                          STORE_NAME . " " . $insert_id, 
                                                          $customer,
+                                                         $webhook_url,
                                                          tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' )
                                                         );
 
