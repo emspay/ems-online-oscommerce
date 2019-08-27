@@ -67,7 +67,7 @@ class Ems_Services_Lib
         curl_setopt($curl, CURLOPT_HTTPHEADER, $request_headers);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2); // 2 = to check the existence of a common name and also verify that it matches the hostname provided. In production environments the value of this option should be kept at 2 (default value).
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_FORBID_REUSE, 1);
         curl_setopt($curl, CURLOPT_FRESH_CONNECT, 1);
@@ -104,12 +104,12 @@ class Ems_Services_Lib
 
     public function emsCreateIdealOrder($orders_id, $total, $description, $customer, $return_url, $issuer_id )
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -118,19 +118,19 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),                 
+            ],
             "description"       => (string)$description,
             "return_url"        => (string)$return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method"         => "ideal",
                     "payment_method_details" => array("issuer_id" => $issuer_id)
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -140,12 +140,12 @@ class Ems_Services_Lib
 
     public function emsCreateKlarnaOrder($orders_id, $total, $description, $customer, $return_url, $order_lines)
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'birthdate'     => !empty($customer['birthdate']) ? (string)$customer['birthdate'] : null,
@@ -158,19 +158,19 @@ class Ems_Services_Lib
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
                 'phone_numbers' => array($customer['phone_number']),
-            ),                 
+            ],                 
             "description"       => (string)$description,
             "return_url"        => (string)$return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method"         => "klarna",
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
+            ],
             'order_lines' => $order_lines,
-        );
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -180,12 +180,12 @@ class Ems_Services_Lib
 
     public function emsCreateCreditCardOrder($orders_id, $total, $description, $customer, $return_url )
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -194,18 +194,18 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
+            ],
             "description"       => $description,
             "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method" => "credit-card",
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -215,12 +215,12 @@ class Ems_Services_Lib
 
     public function emsCreateBcOrder($orders_id, $total, $description, $customer, $return_url )
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -229,18 +229,18 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
+            ],
             "description"       => $description,
             "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method" => "bancontact",
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -250,12 +250,12 @@ class Ems_Services_Lib
 
     public function emsCreatePayconiqOrder($orders_id, $total, $description, $customer, $return_url)
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -264,53 +264,18 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
+            ],
             "description"       => $description,
             "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method" => "payconiq",
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }  
-
-    public function emsCreateHomepayOrder($orders_id, $total, $description, $customer, $return_url )
-    {
-        $post = array(
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
-                    "payment_method" => "homepay",
-                )
-            ),
-            'extra' => array(
-                'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -320,12 +285,12 @@ class Ems_Services_Lib
 
     public function emsCreatePaypalOrder($orders_id, $total, $description, $customer, $return_url )
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -334,7 +299,7 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
+            ],
             "description"       => $description,
             "return_url"        => $return_url,
             "transactions"      => array(
@@ -342,10 +307,10 @@ class Ems_Services_Lib
                     "payment_method" => "paypal",
                 )
             ),
-            'extra' => array(
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -355,12 +320,12 @@ class Ems_Services_Lib
 
     public function emsCreateSofortOrder($orders_id, $total, $description, $customer, $return_url )
     {
-        $post = array(
+        $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
+            'customer' => [
                 'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
                 'address_type'  => 'customer',
                 'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -369,18 +334,18 @@ class Ems_Services_Lib
                 'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
                 'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),            
+            ],
             "description"       => $description,
             "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
+            "transactions"      => [
+                [
                     "payment_method" => "sofort",
-                )
-            ),
-            'extra' => array(
+                ]
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);
@@ -390,16 +355,18 @@ class Ems_Services_Lib
 
     public function emsCreateBanktransferOrder($orders_id, $total, $description, $customer = array())
     {
-        $post = array(
+        $post = [
             "type"         => "payment",
             "currency"     => "EUR",
             "amount"       => 100 * round($total, 2),
             "description"  => (string)$description,
-            "transactions" => array(array(
-                "payment_method" => "bank-transfer",
-            )),
+            "transactions" => [
+                [
+                    "payment_method" => "bank-transfer",
+                ]
+            ],
             "merchant_order_id" => (string)$orders_id,
-			'customer' => array(
+			'customer' => [
 	            'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
 	            'address_type'  => 'customer',
 	            'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
@@ -408,42 +375,11 @@ class Ems_Services_Lib
 	            'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
                 'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
 	            'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ),
-            'extra' => array(
+            ],
+            'extra' => [
                 'plugin' => $this->plugin_version,
-            ),
-        );
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }
-
-    public function emsCreateCashondeliveryOrder($orders_id, $total, $description, $customer = array())
-    {
-        $post = array(
-            "type"         => "payment",
-            "currency"     => "EUR",
-            "amount"       => 100 * round($total, 2),
-            "description"  => (string)$description,
-            "transactions" => array(array(
-                "payment_method" => "cash-on-delivery",
-            )),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => array(
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null
-            ),
-            'extra' => array(
-                'plugin' => $this->plugin_version,
-            ),
-        );
+            ],
+        ];
 
         $order = json_encode($post);
         $result = $this->performApiCall("orders/", $order);

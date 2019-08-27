@@ -1,3 +1,0 @@
-<?php
-define( 'MODULE_PAYMENT_EMSPAY_CASHONDELIVERY_TEXT_TITLE', 'à la livraison' );
-define( 'MODULE_PAYMENT_EMSPAY_CASHONDELIVERY_TEXT_DESCRIPTION', 'Payer à la livraison' );
