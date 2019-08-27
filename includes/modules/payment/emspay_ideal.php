@@ -25,8 +25,6 @@ class emspay_ideal {
       $this->update_status();
     }
 
-    $this->email_footer = MODULE_PAYMENT_EMSPAY_IDEAL_TEXT_EMAIL_FOOTER;
-
     $this->emspay = null;
     if ($this->enabled) {
       if ( file_exists( 'emspay/ems_lib.php' ) ) {
