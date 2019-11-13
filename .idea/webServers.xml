@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="6788b98a-0f1c-4de2-8c38-3ca19805378d" name="fh" url="http://ftp.gingerpluginsnl.hosting-cluster.nl">
+        <fileTransfer host="ftp.gingerpluginsnl.hosting-cluster.nl" port="21" rootFolder="/subsites/oscommerce.intern.gingerplugins.nl/catalog">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
