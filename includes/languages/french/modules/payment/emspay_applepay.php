@@ -1,0 +1,3 @@
+<?php
+define( 'MODULE_PAYMENT_EMSPAY_APPLEPAY_TEXT_TITLE', 'Apple Pay' );
+define( 'MODULE_PAYMENT_EMSPAY_APPLEPAY_TEXT_DESCRIPTION', 'Payer par Apple Pay' );

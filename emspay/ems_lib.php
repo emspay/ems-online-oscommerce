@@ -221,6 +221,43 @@ class Ems_Services_Lib
 
         return $result;
     }
+    public function emsCreateApplePayOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
+    {
+        $post = [
+            "type"              => "payment",
+            "currency"          => "EUR",
+            "amount"            => 100 * round($total, 2),
+            "merchant_order_id" => (string)$orders_id,
+            'customer' => [
+                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
+                'address_type'  => 'customer',
+                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
+                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
+                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
+                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
+                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
+                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
+            ],
+            "description"       => $description,
+            "return_url"        => $return_url,
+            "transactions"      => [
+                [
+                    "payment_method" => "apple-pay",
+                ]
+            ],
+            'extra' => [
+                'plugin' => $this->plugin_version,
+            ],
+        ];
+
+        if ($webhook_url != null)
+            $post['webhook_url'] = $webhook_url;
+
+        $order = json_encode($post);
+        $result = $this->performApiCall("orders/", $order);
+
+        return $result;
+    }
 
     public function emsCreateBcOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
