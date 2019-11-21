@@ -78,7 +78,7 @@ class emspay_klarna {
   }
 
   function selection() {
-    if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
+    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
       return;
     }
 
@@ -149,7 +149,7 @@ class emspay_klarna {
       'gender'        => $order->customer['gender'] == "f" ? 'female' : 'male',
       'postal_code'   => $order->customer['postcode'],
       'phone_number'  => $order->customer['telephone'],
-      'ip_address'    => $_SERVER['REMOTE_ADDR'],
+      'ip_address'    => filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP),
       'locale'        => 'nl_NL',  
       );
 
