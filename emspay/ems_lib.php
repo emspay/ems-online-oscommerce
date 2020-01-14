@@ -141,7 +141,7 @@ class Ems_Services_Lib
         return $result;
     }
 
-    public function emsCreateKlarnaOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $order_lines)
+    public function emsCreateKlarnaPayLaterOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $order_lines)
     {
         $post = [
             "type"              => "payment",
@@ -166,7 +166,7 @@ class Ems_Services_Lib
             "return_url"        => (string)$return_url,
             "transactions"      => [
                 [
-                    "payment_method"         => "klarna",
+                    "payment_method"         => "klarna-pay-later",
                 ]
             ],
             'extra' => [

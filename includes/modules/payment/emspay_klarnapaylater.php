@@ -1,24 +1,24 @@
 <?php
-class emspay_klarna {
+class emspay_klarnapaylater {
   var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
 
   // Class Constructor
-  function emspay_klarna() {
+  function emspay_klarnapaylater() {
     global $order;
 
-    $this->code = 'emspay_klarna';
-    $this->title_selection = MODULE_PAYMENT_EMSPAY_KLARNA_TEXT_TITLE;
+    $this->code = 'emspay_klarnapaylater';
+    $this->title_selection = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
-    $this->description = MODULE_PAYMENT_EMSPAY_KLARNA_TEXT_DESCRIPTION;
-    $this->sort_order = MODULE_PAYMENT_EMSPAY_KLARNA_SORT_ORDER;
-    $this->enabled = ( ( MODULE_PAYMENT_EMSPAY_KLARNA_STATUS == 'True' ) ? true : false );
+    $this->description = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_DESCRIPTION;
+    $this->sort_order = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_SORT_ORDER;
+    $this->enabled = ( ( MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS == 'True' ) ? true : false );
     $this->debug_mode = ( ( MODULE_PAYMENT_EMSPAY_DEBUG_MODE == 'True' ) ? true : false );
     $this->log_to = MODULE_PAYMENT_EMSPAY_LOG_TO;
 
     if ( (int)MODULE_PAYMENT_EMSPAY_ORDER_STATUS_ID > 0 ) {
       $this->order_status = MODULE_PAYMENT_EMSPAY_ORDER_STATUS_ID;
-      $payment = 'emspay_klarna';
-    } else if ( $payment=='emspay_klarna' ) {
+      $payment = 'emspay_klarnapaylater';
+    } else if ( $payment== 'emspay_klarnapaylater') {
         $payment='';
       }
     if ( is_object( $order ) ) {
@@ -29,8 +29,8 @@ class emspay_klarna {
     if ($this->enabled) {
       if ( file_exists( 'emspay/ems_lib.php' ) ) {
         require_once 'emspay/ems_lib.php';
-        if (defined('MODULE_PAYMENT_EMSPAY_KLARNA_TEST_APIKEY') && MODULE_PAYMENT_EMSPAY_KLARNA_TEST_APIKEY != '')
-          $this->emspay = new Ems_Services_Lib( MODULE_PAYMENT_EMSPAY_KLARNA_TEST_APIKEY, $this->log_to, $this->debug_mode );
+        if (defined('MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_APIKEY') && MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_APIKEY != '')
+          $this->emspay = new Ems_Services_Lib( MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_APIKEY, $this->log_to, $this->debug_mode );
         else 
           $this->emspay = new Ems_Services_Lib( MODULE_PAYMENT_EMSPAY_APIKEY, $this->log_to, $this->debug_mode );
       } else {
@@ -43,9 +43,9 @@ class emspay_klarna {
   function update_status() {
     global $order;
 
-    if ( ( $this->enabled == true ) && ( (int)MODULE_PAYMENT_EMSPAY_KLARNA_ZONE > 0 ) ) {
+    if ( ( $this->enabled == true ) && ( (int)MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_ZONE > 0 ) ) {
       $check_flag = false;
-      $check_query = tep_db_query( "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . intval( MODULE_PAYMENT_EMSPAY_KLARNA_ZONE ) . "' and zone_country_id = '" . intval( $order->billing['country']['id'] ) . "' order by zone_id" );
+      $check_query = tep_db_query( "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . intval( MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_ZONE ) . "' and zone_country_id = '" . intval( $order->billing['country']['id'] ) . "' order by zone_id" );
       while ( $check = tep_db_fetch_array( $check_query ) ) {
         if ( $check['zone_id'] < 1 ) {
           $check_flag = true;
@@ -78,7 +78,7 @@ class emspay_klarna {
   }
 
   function selection() {
-    if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
+    if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
       return;
     }
 
@@ -165,7 +165,7 @@ class emspay_klarna {
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
-    $emspay_order = $this->emspay->emsCreateKlarnaOrder( $insert_id, 
+    $emspay_order = $this->emspay->emsCreateKlarnaPayLaterOrder( $insert_id,
                                                          $order->info['total'], 
                                                          STORE_NAME . " " . $insert_id, 
                                                          $customer, 
@@ -182,7 +182,7 @@ class emspay_klarna {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       // $this->tep_remove_order( $insert_id, $restock = true );
       // check if we have a reason
-      $reason = "Error placing Klarna order";
+      $reason = "Error placing Klarna Pay Later order";
       if (array_key_exists('error', $emspay_order) && array_key_exists('value', $emspay_order['error']))
         $reason .= " " . $emspay_order['error']['value'];
       if (array_key_exists('reason', $emspay_order['transactions'][0]))
@@ -199,7 +199,7 @@ class emspay_klarna {
 
   function check() {
     if ( !isset( $this->_check ) ) {
-      $check_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_KLARNA_STATUS'" );
+      $check_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS'" );
       $this->_check = tep_db_num_rows( $check_query );
     }
     return $this->_check;
@@ -214,10 +214,10 @@ class emspay_klarna {
 
     $sort_order = 0;
     $add_array = array(
-      "configuration_title" => 'Enable EMS Online Klarna Module',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNA_STATUS',
+      "configuration_title" => 'Enable EMS Online Klarna Pay Later Module',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept Klarna payments via ING psp?',
+      "configuration_description" => 'Do you want to accept Klarna Pay Later payments via ING psp?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",
@@ -228,7 +228,7 @@ class emspay_klarna {
 
     $add_array = array(
       "configuration_title" => 'Payment Zone',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNA_ZONE',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_ZONE',
       "configuration_value" => 0,
       "configuration_description" => 'If a zone is selected, only enable this payment method for that zone.',
       "configuration_group_id " => '6',
@@ -242,7 +242,7 @@ class emspay_klarna {
 
     $add_array = array(
       "configuration_title" => 'Sort Order of Display',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNA_SORT_ORDER',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_SORT_ORDER',
       "configuration_value" => 0,
       "configuration_description" => 'Sort order of display. Lowest is displayed first.',
       "configuration_group_id " => '6',
@@ -254,9 +254,9 @@ class emspay_klarna {
 
     $add_array = array(
       "configuration_title" => 'Test API key',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNA_TEST_APIKEY',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_APIKEY',
       "configuration_value" => '',
-      "configuration_description" => 'Test API key, if filled this one is used to initiate the Klarna transaction',
+      "configuration_description" => 'Test API key, if filled this one is used to initiate the Klarna Pay Later transaction',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "date_added " => 'now()',
@@ -266,9 +266,9 @@ class emspay_klarna {
 
     $add_array = array(
       "configuration_title" => 'Test IP addresses',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP',
       "configuration_value" => '',
-      "configuration_description" => 'IP Addresses to test Klarna with, seperated by ; leave empty to disable IP filtering',
+      "configuration_description" => 'IP Addresses to test Klarna Pay Later with, seperated by ; leave empty to disable IP filtering',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "date_added " => 'now()',
@@ -283,11 +283,11 @@ class emspay_klarna {
 
   function keys() {
     return array(
-      'MODULE_PAYMENT_EMSPAY_KLARNA_STATUS',
-      'MODULE_PAYMENT_EMSPAY_KLARNA_ZONE',
-      'MODULE_PAYMENT_EMSPAY_KLARNA_SORT_ORDER',
-      'MODULE_PAYMENT_EMSPAY_KLARNA_TEST_APIKEY',
-      'MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_ZONE',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_SORT_ORDER',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_APIKEY',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP',
     );
   }
 
