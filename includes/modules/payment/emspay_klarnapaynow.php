@@ -1,24 +1,24 @@
 <?php
-class emspay_sofort {
+class emspay_klarnapaynow {
   var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
 
   // Class Constructor
-  function emspay_sofort() {
+  function emspay_klarnapaynow() {
     global $order;
 
-    $this->code = 'emspay_sofort';
-    $this->title_selection = MODULE_PAYMENT_EMSPAY_SOFORT_TEXT_TITLE;
+    $this->code = 'emspay_klarnapaynow';
+    $this->title_selection = MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
-    $this->description = MODULE_PAYMENT_EMSPAY_SOFORT_TEXT_DESCRIPTION;
-    $this->sort_order = MODULE_PAYMENT_EMSPAY_SOFORT_SORT_ORDER;
-    $this->enabled = ( ( MODULE_PAYMENT_EMSPAY_SOFORT_STATUS == 'True' ) ? true : false );
+    $this->description = MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_TEXT_DESCRIPTION;
+    $this->sort_order = MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_SORT_ORDER;
+    $this->enabled = ( ( MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_STATUS == 'True' ) ? true : false );
     $this->debug_mode = ( ( MODULE_PAYMENT_EMSPAY_DEBUG_MODE == 'True' ) ? true : false );
     $this->log_to = MODULE_PAYMENT_EMSPAY_LOG_TO;
 
     if ( (int)MODULE_PAYMENT_EMSPAY_ORDER_STATUS_ID > 0 ) {
       $this->order_status = MODULE_PAYMENT_EMSPAY_ORDER_STATUS_ID;
-      $payment = 'emspay_sofort';
-    } else if ( $payment=='emspay_sofort' ) {
+      $payment = 'emspay_klarnapaynow';
+    } else if ( $payment== 'emspay_klarnapaynow') {
         $payment='';
       }
     if ( is_object( $order ) ) {
@@ -40,9 +40,9 @@ class emspay_sofort {
   function update_status() {
     global $order;
 
-    if ( ( $this->enabled == true ) && ( (int)MODULE_PAYMENT_EMSPAY_SOFORT_ZONE > 0 ) ) {
+    if ( ( $this->enabled == true ) && ( (int)MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_ZONE > 0 ) ) {
       $check_flag = false;
-      $check_query = tep_db_query( "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . intval( MODULE_PAYMENT_EMSPAY_SOFORT_ZONE ) . "' and zone_country_id = '" . intval( $order->billing['country']['id'] ) . "' order by zone_id" );
+      $check_query = tep_db_query( "select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . intval( MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_ZONE ) . "' and zone_country_id = '" . intval( $order->billing['country']['id'] ) . "' order by zone_id" );
       while ( $check = tep_db_fetch_array( $check_query ) ) {
         if ( $check['zone_id'] < 1 ) {
           $check_flag = true;
@@ -119,7 +119,7 @@ class emspay_sofort {
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
-    $emspay_order = $this->emspay->emsCreateSofortOrder( $insert_id, 
+    $emspay_order = $this->emspay->emsCreateKlarnaPayNowOrder( $insert_id,
                                                          $order->info['total'], 
                                                          STORE_NAME . " " . $insert_id, 
                                                          $customer,
@@ -149,7 +149,7 @@ class emspay_sofort {
 
   function check() {
     if ( !isset( $this->_check ) ) {
-      $check_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_SOFORT_STATUS'" );
+      $check_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_STATUS'" );
       $this->_check = tep_db_num_rows( $check_query );
     }
     return $this->_check;
@@ -172,7 +172,7 @@ class emspay_sofort {
     $sort_order = 0;
     $add_array = array(
       "configuration_title" => 'Enable EMS Online SOFORT Module',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_SOFORT_STATUS',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_STATUS',
       "configuration_value" => 'False',
       "configuration_description" => 'Do you want to accept SOFORT payments using ING?',
       "configuration_group_id " => '6',
@@ -185,7 +185,7 @@ class emspay_sofort {
 
     $add_array = array(
       "configuration_title" => 'Payment Zone',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_SOFORT_ZONE',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_ZONE',
       "configuration_value" => 0,
       "configuration_description" => 'If a zone is selected, only enable this payment method for that zone.',
       "configuration_group_id " => '6',
@@ -199,7 +199,7 @@ class emspay_sofort {
 
     $add_array = array(
       "configuration_title" => 'Sort Order of Display',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_SOFORT_SORT_ORDER',
+      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_SORT_ORDER',
       "configuration_value" => 0,
       "configuration_description" => 'Sort order of display. Lowest is displayed first.',
       "configuration_group_id " => '6',
@@ -217,9 +217,9 @@ class emspay_sofort {
 
   function keys() {
     return array(
-      'MODULE_PAYMENT_EMSPAY_SOFORT_STATUS',
-      'MODULE_PAYMENT_EMSPAY_SOFORT_ZONE',
-      'MODULE_PAYMENT_EMSPAY_SOFORT_SORT_ORDER',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_STATUS',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_ZONE',
+      'MODULE_PAYMENT_EMSPAY_KLARNAPAYNOW_SORT_ORDER',
     );
   }
 

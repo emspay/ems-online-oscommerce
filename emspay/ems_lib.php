@@ -375,7 +375,7 @@ class Ems_Services_Lib
         return $result;
     }        
 
-    public function emsCreateSofortOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
+    public function emsCreateKlarnaPayNowOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
     {
         $post = [
             "type"              => "payment",
@@ -396,7 +396,7 @@ class Ems_Services_Lib
             "return_url"        => $return_url,
             "transactions"      => [
                 [
-                    "payment_method" => "sofort",
+                    "payment_method" => "klarna-pay-now",
                 ]
             ],
             'extra' => [
