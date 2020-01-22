@@ -9,3 +9,7 @@ osCommerce 1.0.0 EMS Online
 + Add Apple Pay
 + Fix in the beberlei/assert library
 + Fixed bug with field ip address
+
+## Changes in version 1.0.2
++ Renamed Sofort to Klarna Pay Now
++ Renamed Klarna to Klarna Pay Later
