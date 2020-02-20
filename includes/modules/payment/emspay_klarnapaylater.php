@@ -77,12 +77,9 @@ class emspay_klarnapaylater {
     return false;
   }
 
-  function selection() {
-<<<<<<< HEAD:includes/modules/payment/emspay_klarnapaylater.php
+    function selection() {
+
     if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
-=======
-    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
->>>>>>> master:includes/modules/payment/emspay_klarna.php
       return;
     }
 
