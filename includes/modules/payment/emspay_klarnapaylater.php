@@ -1,12 +1,13 @@
 <?php
 class emspay_klarnapaylater {
-  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
+  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay, $id;
 
   // Class Constructor
   function emspay_klarnapaylater() {
     global $order;
 
     $this->code = 'emspay_klarnapaylater';
+    $this->id = 'klarna-pay-later';
     $this->title_selection = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
     $this->description = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_DESCRIPTION;
@@ -78,11 +79,7 @@ class emspay_klarnapaylater {
   }
 
   function selection() {
-<<<<<<< HEAD:includes/modules/payment/emspay_klarnapaylater.php
-    if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
-=======
     if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
->>>>>>> master:includes/modules/payment/emspay_klarna.php
       return;
     }
 
@@ -112,7 +109,7 @@ class emspay_klarnapaylater {
   }
 
   function after_process() {
-    global $insert_id, $order, $cart, $currencies, $customer_id;
+    global $insert_id, $order;
 
     $order_lines = array();
 
@@ -140,40 +137,18 @@ class emspay_klarnapaylater {
         'vat_percentage' => (int)2100,
         );
     }
-    $customer_data_not_in_customer_object = tep_db_fetch_array(tep_db_query("SELECT customers_dob, customers_gender FROM customers WHERE customers_id = '" . (int)$customer_id . "'"));
-
-    $customer = array(
-      'address'       => $order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city'],
-      'address_type'  => 'customer',
-      'birthdate'     => date("Y-m-d", strtotime($customer_data_not_in_customer_object['customers_dob'])),
-      'country'       => $order->customer['country']['iso_code_2'],
-      'email_address' => $order->customer['email_address'],
-      'first_name'    => $order->customer['firstname'],
-      'last_name'     => $order->customer['lastname'],
-      'gender'        => $order->customer['gender'] == "f" ? 'female' : 'male',
-      'postal_code'   => $order->customer['postcode'],
-      'phone_number'  => $order->customer['telephone'],
-      'ip_address'    => filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP),
-      'locale'        => 'nl_NL',  
-      );
-
-    global $languages_id;
-    // check if it's not english
-    $language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
-    if ($language_row['code'] == 'en')
-      $customer['locale'] = 'en_GB';
-    else
-      $customer['locale'] = $language_row['code'] . "_" . strtoupper($language_row['code']);
 
     $webhook_url = null;
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
-    $emspay_order = $this->emspay->emsCreateKlarnaPayLaterOrder( $insert_id,
+    $customer = $this->emspay->getCustomerInfo();
+    $emspay_order = $this->emspay->emsCreateOrderWithOrderLines( $insert_id,
                                                          $order->info['total'], 
                                                          STORE_NAME . " " . $insert_id, 
                                                          $customer, 
                                                          $webhook_url,
+	     								   $this->id,
                                                          tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ), 
                                                          $order_lines );
 

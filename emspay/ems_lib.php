@@ -19,7 +19,7 @@ class Ems_Services_Lib
 
         $this->debugCurl   = false;
 
-        $this->plugin_version = 'osc-1.0.0';
+        $this->plugin_version = 'osc-2.0.0';
     }
 
     public function emsLog($contents)
@@ -109,16 +109,7 @@ class Ems_Services_Lib
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
+            'customer' 		  => $customer,
             "description"       => (string)$description,
             "return_url"        => (string)$return_url,
             "transactions"      => [
@@ -141,313 +132,64 @@ class Ems_Services_Lib
         return $result;
     }
 
-    public function emsCreateKlarnaPayLaterOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $order_lines)
+    public function emsCreateOrder($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url = '')
     {
         $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'birthdate'     => !empty($customer['birthdate']) ? (string)$customer['birthdate'] : null,
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'ip_address'    => !empty($customer['ip_address']) ? (string)$customer['ip_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'gender'        => !empty($customer['gender'   ]) ? (string)$customer['gender'   ] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-                'phone_numbers' => array($customer['phone_number']),
-            ],                 
+            'customer' 		  => $customer,
             "description"       => (string)$description,
             "return_url"        => (string)$return_url,
             "transactions"      => [
                 [
-                    "payment_method"         => "klarna-pay-later",
+                    "payment_method"         => $this->plugin_version,
                 ]
             ],
             'extra' => [
                 'plugin' => $this->plugin_version,
             ],
-            'order_lines' => $order_lines,
         ];
+
+	  if ($return_url != null)
+		$post['return_url'] = $return_url;
 
         if ($webhook_url != null)
             $post['webhook_url'] = $webhook_url;
 
         $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
 
-        return $result;
+        return $this->performApiCall("orders/", $order);
     }
 
-    public function emsCreateCreditCardOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
+    public function emsCreateOrderWithOrderLines($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url, $order_lines)
     {
         $post = [
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
             "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
+            'customer' 		  => $customer,
             "description"       => $description,
             "return_url"        => $return_url,
             "transactions"      => [
                 [
-                    "payment_method" => "credit-card",
+                    "payment_method" => $payment_id,
                 ]
             ],
             'extra' => [
                 'plugin' => $this->plugin_version,
             ],
+		'order_lines' 	  => $order_lines,
         ];
 
         if ($webhook_url != null)
             $post['webhook_url'] = $webhook_url;
 
         $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
 
-        return $result;
-    }
-    public function emsCreateApplePayOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => [
-                [
-                    "payment_method" => "apple-pay",
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }
-
-    public function emsCreateBcOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => [
-                [
-                    "payment_method" => "bancontact",
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }
-
-    public function emsCreatePayconiqOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url)
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => [
-                [
-                    "payment_method" => "payconiq",
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }  
-
-    public function emsCreatePaypalOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => array(
-                array(
-                    "payment_method" => "paypal",
-                )
-            ),
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }        
-
-    public function emsCreateKlarnaPayNowOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url )
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' => [
-                'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-                'address_type'  => 'customer',
-                'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-                'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-                'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-                'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-                'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => [
-                [
-                    "payment_method" => "klarna-pay-now",
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }    
-
-    public function emsCreateBanktransferOrder($orders_id, $total, $description, $customer = array(), $webhook_url)
-    {
-        $post = [
-            "type"         => "payment",
-            "currency"     => "EUR",
-            "amount"       => 100 * round($total, 2),
-            "description"  => (string)$description,
-            "transactions" => [
-                [
-                    "payment_method" => "bank-transfer",
-                ]
-            ],
-            "merchant_order_id" => (string)$orders_id,
-			'customer' => [
-	            'address'       => !empty($customer['address']) ? (string)$customer['address'] : null,
-	            'address_type'  => 'customer',
-	            'country'       => !empty($customer['country']) ? (string)$customer['country'] : null,
-	            'email_address' => !empty($customer['email_address']) ? (string)$customer['email_address'] : null,
-	            'first_name'    => !empty($customer['first_name']) ? (string)$customer['first_name'] : null,
-	            'last_name'     => !empty($customer['last_name']) ? (string)$customer['last_name'] : null,
-                'postal_code'   => !empty($customer['postal_code']) ? (string)$customer['postal_code'] : null,
-	            'locale'        => !empty($customer['locale']) ? (string)$customer['locale'] : null,
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
+        return $this->performApiCall("orders/", $order);
     }
 
     public function getOrderStatus($order_id)
@@ -472,5 +214,39 @@ class Ems_Services_Lib
         else {
             return $order;
         }
+    }
+
+    public function getCustomerInfo($gender = '', $birthdate = '')
+    {
+	  global $order, $languages_id, $customer_id;
+
+	  if (empty($gender)||empty($birthdate)) {
+		// check if it's not english
+		$language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
+		$customer_data_not_in_customer_object = tep_db_fetch_array(tep_db_query("SELECT customers_dob, customers_gender FROM customers WHERE customers_id = '" . (int)$customer_id . "'"));
+
+		if (empty($gender)) {
+		    $gender = $customer_data_not_in_customer_object['customers_gender'] == "f" ? 'female' : 'male';
+		}
+
+		if (empty($birthdate)) {
+		    $birthdate = date("Y-m-d", strtotime($customer_data_not_in_customer_object['customers_dob']));
+		}
+	  }
+
+	  return array(
+		  'email_address' => !empty($order->customer['email_address']) ? (string)$order->customer['email_address'] : null,
+		  'first_name' => !empty($order->customer['firstname']) ? (string)$order->customer['firstname'] : null,
+		  'last_name' => !empty($order->customer['lastname']) ? (string)$order->customer['lastname'] : null,
+		  'address_type' => 'customer',
+		  'address' => !empty($order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city']) ? (string)($order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city']) : null,
+		  'postal_code' => !empty($order->customer['postcode']) ? (string)$order->customer['postcode'] : null,
+		  'country' => !empty($order->customer['country']['iso_code_2']) ? (string)$order->customer['country']['iso_code_2'] : null,
+		  'locale' => $language_row['code'] == 'en' ? 'en_GB' : 'nl_NL',
+		  'phone_numbers' => !empty($order->customer['telephone']) ? [(string)$order->customer['telephone']] : null,
+		  'ip_address' => !empty(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP)) ? (string)filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP) : null,
+		  'gender' => $gender,
+		  'birthdate' => $birthdate,
+	  );
     }
 }

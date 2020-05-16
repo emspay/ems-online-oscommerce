@@ -140,27 +140,11 @@ class emspay_ideal {
   function after_process() {
     global $insert_id, $order;
 
-    $customer = array(
-      'address'       => $order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city'],
-      'address_type'  => 'customer',
-      'country'       => $order->customer['country']['iso_code_2'],
-      'email_address' => $order->customer['email_address'],
-      'first_name'    => $order->customer['firstname'],
-      'last_name'     => $order->customer['lastname'],
-      'postal_code'   => $order->customer['postcode'],
-      'locale'        => 'nl_NL',  
-      );
-
-    global $languages_id;
-    // check if it's not english
-    $language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
-    if ($language_row['code'] == 'en')
-      $customer['locale'] = 'en_GB';    
-
     $webhook_url = null;
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
+    $customer = $this->emspay->getCustomerInfo();
     $emspay_order = $this->emspay->emsCreateIdealOrder( $insert_id, 
                                                         $order->info['total'], 
                                                         STORE_NAME . " " . $insert_id, 
