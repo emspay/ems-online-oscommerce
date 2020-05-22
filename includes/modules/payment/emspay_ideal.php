@@ -1,12 +1,13 @@
 <?php
 class emspay_ideal {
-  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
+  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay, $id;
 
   // Class Constructor
   function emspay_ideal() {
     global $order;
 
     $this->code = 'emspay_ideal';
+    $this->id = 'ideal';
     $this->title_selection = MODULE_PAYMENT_EMSPAY_IDEAL_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
     $this->description = MODULE_PAYMENT_EMSPAY_IDEAL_TEXT_DESCRIPTION;
@@ -145,14 +146,15 @@ class emspay_ideal {
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
     $customer = $this->emspay->getCustomerInfo();
-    $emspay_order = $this->emspay->emsCreateIdealOrder( $insert_id, 
-                                                        $order->info['total'], 
-                                                        STORE_NAME . " " . $insert_id, 
-                                                        $customer,
-                                                        $webhook_url,
-                                                        tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ), 
-                                                        $_SESSION['emspay_issuer_id']
-                                                        );
+    $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
+                                                   $order->info['total'],
+                                                   STORE_NAME . " " . $insert_id,
+                                                   $customer,
+                                                   $webhook_url,
+	    							   $this->id,
+                                                   tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ),
+                                                   $_SESSION['emspay_issuer_id']
+    								 );
 
     // change order status to value selected by merchant
     tep_db_query( "update ". TABLE_ORDERS. " set orders_status = " . intval( MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID ) . ", emspay_order_id = '" . $emspay_order['id']  . "' where orders_id = ". intval( $insert_id ) );

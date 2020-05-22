@@ -113,12 +113,13 @@ class emspay_banktransfer {
 
     $customer = $this->emspay->getCustomerInfo();
     $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
-                                                              $order->info['total'], 
-                                                              STORE_NAME . " " . $insert_id, 
-                                                              $customer,
-                                                              $webhook_url,
-	    									  $this->id
-                                                              );
+	    							   $order->info['total'],
+	    							   STORE_NAME . " " . $insert_id,
+	    							   $customer,
+	    							   $webhook_url,
+	    							   $this->id,
+	    							   tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' )
+    								 );
 
     // change order status to value selected by merchant
     tep_db_query( "update ". TABLE_ORDERS. " set orders_status = " . intval( MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID ) . ", emspay_order_id = '" . $emspay_order['id']  . "', emspay_bank_reference = '" . $emspay_order['transactions'][0]['payment_method_details']['reference'] . "' where orders_id = ". intval( $insert_id ) );

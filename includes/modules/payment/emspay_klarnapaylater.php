@@ -114,6 +114,7 @@ class emspay_klarnapaylater {
     $order_lines = array();
 
     for ($i=0, $n=sizeof($order->products); $i<$n; $i++) {
+      $product_id = strpos($order->products[$i]['id'], '{') ? substr($order->products[$i]['id'], 0, strpos($order->products[$i]['id'], '{')) : $order->products[$i]['id'];
       $order_lines[] = array(
         'amount' => (int)round(($order->products[$i]['final_price'] + tep_calculate_tax($order->products[$i]['final_price'], $order->products[$i]['tax'])) * 100, 0),
         'currency' => 'EUR',
@@ -121,7 +122,7 @@ class emspay_klarnapaylater {
         'name' => $order->products[$i]['name'],
         'quantity' => (int)$order->products[$i]['qty'],
         'type' => 'physical',
-        'url' => tep_href_link(FILENAME_PRODUCT_INFO, 'products_id=' . $order->products[$i]['id']),
+        'url' => tep_href_link(FILENAME_PRODUCT_INFO, 'products_id=' . $product_id),
         'vat_percentage' => (int)round(($order->products[$i]['tax'] * 100), 0),
         );
     }
@@ -143,14 +144,16 @@ class emspay_klarnapaylater {
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
     $customer = $this->emspay->getCustomerInfo();
-    $emspay_order = $this->emspay->emsCreateOrderWithOrderLines( $insert_id,
-                                                         $order->info['total'], 
-                                                         STORE_NAME . " " . $insert_id, 
-                                                         $customer, 
-                                                         $webhook_url,
-	     								   $this->id,
-                                                         tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ), 
-                                                         $order_lines );
+    $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
+	    							   $order->info['total'],
+	    							   STORE_NAME . " " . $insert_id,
+	    							   $customer,
+	    							   $webhook_url,
+	    							   $this->id,
+	    							   tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ),
+	    							   null,
+	    							   $order_lines
+    								 );
 
     // change order status to value selected by merchant
     tep_db_query( "update ". TABLE_ORDERS. " set orders_status = " . intval( MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID ) . ", emspay_order_id = '" . $emspay_order['id']  . "' where orders_id = ". intval( $insert_id ) );

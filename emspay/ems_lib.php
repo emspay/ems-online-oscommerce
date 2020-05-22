@@ -102,7 +102,7 @@ class Ems_Services_Lib
         return $this->performApiCall("ideal/issuers/");
     }
 
-    public function emsCreateIdealOrder($orders_id, $total, $description, $customer, $webhook_url, $return_url, $issuer_id )
+    public function emsCreateOrder($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url, $issuer_id = null, $order_lines = [])
     {
         $post = [
             "type"              => "payment",
@@ -114,37 +114,7 @@ class Ems_Services_Lib
             "return_url"        => (string)$return_url,
             "transactions"      => [
                 [
-                    "payment_method"         => "ideal",
-                    "payment_method_details" => array("issuer_id" => $issuer_id)
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
-
-        $order = json_encode($post);
-        $result = $this->performApiCall("orders/", $order);
-
-        return $result;
-    }
-
-    public function emsCreateOrder($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url = '')
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' 		  => $customer,
-            "description"       => (string)$description,
-            "return_url"        => (string)$return_url,
-            "transactions"      => [
-                [
-                    "payment_method"         => $this->plugin_version,
+                    "payment_method"         => $payment_id,
                 ]
             ],
             'extra' => [
@@ -158,34 +128,11 @@ class Ems_Services_Lib
         if ($webhook_url != null)
             $post['webhook_url'] = $webhook_url;
 
-        $order = json_encode($post);
+        if ($issuer_id != null)
+            $post['transactions'][0]['payment_method_details'] = array("issuer_id" => $issuer_id);
 
-        return $this->performApiCall("orders/", $order);
-    }
-
-    public function emsCreateOrderWithOrderLines($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url, $order_lines)
-    {
-        $post = [
-            "type"              => "payment",
-            "currency"          => "EUR",
-            "amount"            => 100 * round($total, 2),
-            "merchant_order_id" => (string)$orders_id,
-            'customer' 		  => $customer,
-            "description"       => $description,
-            "return_url"        => $return_url,
-            "transactions"      => [
-                [
-                    "payment_method" => $payment_id,
-                ]
-            ],
-            'extra' => [
-                'plugin' => $this->plugin_version,
-            ],
-		'order_lines' 	  => $order_lines,
-        ];
-
-        if ($webhook_url != null)
-            $post['webhook_url'] = $webhook_url;
+        if (!empty($order_lines))
+	  	$post['order_lines'] = $order_lines;
 
         $order = json_encode($post);
 
