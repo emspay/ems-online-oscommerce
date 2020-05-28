@@ -19,7 +19,7 @@ class Ems_Services_Lib
 
         $this->debugCurl   = false;
 
-        $this->plugin_version = 'osc-2.0.0';
+        $this->plugin_version = 'osc-1.0.3';
     }
 
     public function emsLog($contents)
