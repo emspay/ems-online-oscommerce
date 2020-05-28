@@ -79,7 +79,7 @@ class emspay_klarnapaylater {
   }
 
   function selection() {
-    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
+    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
       return;
     }
 
