@@ -158,7 +158,7 @@ class emspay_tikkiepaymentrequest {
         "configuration_title" => 'Enable EMS Online Tikkie Payment Request Module',
         "configuration_key" => 'MODULE_PAYMENT_EMSPAY_TIKKIEPAYMENTREQUEST_STATUS',
         "configuration_value" => 'False',
-        "configuration_description" => 'Do you want to accept Tikkie Payment Request payments using ING?',
+        "configuration_description" => 'Do you want to accept Tikkie Payment Request payments using EMS Online?',
         "configuration_group_id " => '6',
         "sort_order" => $sort_order,
         "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

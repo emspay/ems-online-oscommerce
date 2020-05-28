@@ -199,7 +199,7 @@ class emspay_klarnapaylater {
       "configuration_title" => 'Enable EMS Online Klarna Pay Later Module',
       "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept Klarna Pay Later payments via ING psp?',
+      "configuration_description" => 'Do you want to accept Klarna Pay Later payments using EMS Online?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

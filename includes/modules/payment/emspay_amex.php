@@ -158,7 +158,7 @@ class emspay_amex {
         "configuration_title" => 'Enable EMS Online American Express Module',
         "configuration_key" => 'MODULE_PAYMENT_EMSPAY_AMEX_STATUS',
         "configuration_value" => 'False',
-        "configuration_description" => 'Do you want to accept American Express payments using ING?',
+        "configuration_description" => 'Do you want to accept American Express payments using EMS Online?',
         "configuration_group_id " => '6',
         "sort_order" => $sort_order,
         "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

@@ -177,7 +177,7 @@ class emspay_banktransfer {
       "configuration_title" => 'Enable EMS Online Banktransfer Module',
       "configuration_key" => 'MODULE_PAYMENT_EMSPAY_BANKTRANSFER_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept banktransfer payments via ING psp?',
+      "configuration_description" => 'Do you want to accept Banktransfer payments using EMS Online?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

@@ -233,7 +233,7 @@ class emspay_afterpay {
         "configuration_title" => 'Enable EMS Online AfterPay Module',
         "configuration_key" => 'MODULE_PAYMENT_EMSPAY_AFTERPAY_STATUS',
         "configuration_value" => 'False',
-        "configuration_description" => 'Do you want to accept iDeal payments via ING psp?',
+        "configuration_description" => 'Do you want to accept iDeal payments using EMS Online?',
         "configuration_group_id " => '6',
         "sort_order" => $sort_order,
         "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

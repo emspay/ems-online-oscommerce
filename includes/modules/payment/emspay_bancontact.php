@@ -160,7 +160,7 @@ class emspay_bancontact {
       "configuration_title" => 'Enable EMS Online Bancontact Module',
       "configuration_key" => 'MODULE_PAYMENT_EMSPAY_BANCONTACT_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept Bancontact payments using ING?',
+      "configuration_description" => 'Do you want to accept Bancontact payments using EMS Online?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",
