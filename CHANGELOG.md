@@ -13,3 +13,10 @@ osCommerce 1.0.0 EMS Online
 ## Changes in version 1.0.2
 + Renamed Sofort to Klarna Pay Now
 + Renamed Klarna to Klarna Pay Later
+
+## Changes in version 1.0.3
+
+* Updated SDK
+* Add American Express
+* Add Tikkie Payment Request
+* Add WeChat
