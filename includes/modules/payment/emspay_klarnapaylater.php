@@ -171,8 +171,10 @@ class emspay_klarnapaylater {
         $reason .= " " . $emspay_order['transactions'][0]['reason'];
       tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     }
-
-    return true;
+    else {
+	  tep_redirect( $emspay_order['transactions'][0]['payment_url'] );
+    }
+	return false;
   }
 
   function get_error() {
