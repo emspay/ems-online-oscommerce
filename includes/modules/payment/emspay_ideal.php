@@ -1,12 +1,13 @@
 <?php
 class emspay_ideal {
-  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
+  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay, $id;
 
   // Class Constructor
   function emspay_ideal() {
     global $order;
 
     $this->code = 'emspay_ideal';
+    $this->id = 'ideal';
     $this->title_selection = MODULE_PAYMENT_EMSPAY_IDEAL_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
     $this->description = MODULE_PAYMENT_EMSPAY_IDEAL_TEXT_DESCRIPTION;
@@ -140,35 +141,20 @@ class emspay_ideal {
   function after_process() {
     global $insert_id, $order;
 
-    $customer = array(
-      'address'       => $order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city'],
-      'address_type'  => 'customer',
-      'country'       => $order->customer['country']['iso_code_2'],
-      'email_address' => $order->customer['email_address'],
-      'first_name'    => $order->customer['firstname'],
-      'last_name'     => $order->customer['lastname'],
-      'postal_code'   => $order->customer['postcode'],
-      'locale'        => 'nl_NL',  
-      );
-
-    global $languages_id;
-    // check if it's not english
-    $language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
-    if ($language_row['code'] == 'en')
-      $customer['locale'] = 'en_GB';    
-
     $webhook_url = null;
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
-    $emspay_order = $this->emspay->emsCreateIdealOrder( $insert_id, 
-                                                        $order->info['total'], 
-                                                        STORE_NAME . " " . $insert_id, 
-                                                        $customer,
-                                                        $webhook_url,
-                                                        tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ), 
-                                                        $_SESSION['emspay_issuer_id']
-                                                        );
+    $customer = $this->emspay->getCustomerInfo();
+    $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
+                                                   $order->info['total'],
+                                                   STORE_NAME . " " . $insert_id,
+                                                   $customer,
+                                                   $webhook_url,
+	    							   $this->id,
+                                                   tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ),
+                                                   $_SESSION['emspay_issuer_id']
+    								 );
 
     // change order status to value selected by merchant
     tep_db_query( "update ". TABLE_ORDERS. " set orders_status = " . intval( MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID ) . ", emspay_order_id = '" . $emspay_order['id']  . "' where orders_id = ". intval( $insert_id ) );
@@ -210,7 +196,7 @@ class emspay_ideal {
       "configuration_title" => 'Enable EMS Online iDEAL Module',
       "configuration_key" => 'MODULE_PAYMENT_EMSPAY_IDEAL_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept iDEAL payments via ING psp?',
+      "configuration_description" => 'Do you want to accept iDEAL payments using EMS Online?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",

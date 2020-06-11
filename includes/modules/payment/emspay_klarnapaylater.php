@@ -1,12 +1,13 @@
 <?php
 class emspay_klarnapaylater {
-  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay;
+  var $code, $title, $description, $sort_order, $enabled, $debug_mode, $log_to, $emspay, $id;
 
   // Class Constructor
   function emspay_klarnapaylater() {
     global $order;
 
     $this->code = 'emspay_klarnapaylater';
+    $this->id = 'klarna-pay-later';
     $this->title_selection = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_TITLE;
     $this->title = 'EMS Online ' . $this->title_selection;
     $this->description = MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEXT_DESCRIPTION;
@@ -78,11 +79,7 @@ class emspay_klarnapaylater {
   }
 
   function selection() {
-<<<<<<< HEAD:includes/modules/payment/emspay_klarnapaylater.php
-    if (in_array($_SERVER['REMOTE_ADDR'], explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
-=======
-    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNA_TEST_IP))) {
->>>>>>> master:includes/modules/payment/emspay_klarna.php
+    if (in_array(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP), explode(';', MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_TEST_IP))) {
       return;
     }
 
@@ -112,11 +109,12 @@ class emspay_klarnapaylater {
   }
 
   function after_process() {
-    global $insert_id, $order, $cart, $currencies, $customer_id;
+    global $insert_id, $order;
 
     $order_lines = array();
 
     for ($i=0, $n=sizeof($order->products); $i<$n; $i++) {
+      $product_id = strpos($order->products[$i]['id'], '{') ? substr($order->products[$i]['id'], 0, strpos($order->products[$i]['id'], '{')) : $order->products[$i]['id'];
       $order_lines[] = array(
         'amount' => (int)round(($order->products[$i]['final_price'] + tep_calculate_tax($order->products[$i]['final_price'], $order->products[$i]['tax'])) * 100, 0),
         'currency' => 'EUR',
@@ -124,7 +122,7 @@ class emspay_klarnapaylater {
         'name' => $order->products[$i]['name'],
         'quantity' => (int)$order->products[$i]['qty'],
         'type' => 'physical',
-        'url' => tep_href_link(FILENAME_PRODUCT_INFO, 'products_id=' . $order->products[$i]['id']),
+        'url' => tep_href_link(FILENAME_PRODUCT_INFO, 'products_id=' . $product_id),
         'vat_percentage' => (int)round(($order->products[$i]['tax'] * 100), 0),
         );
     }
@@ -140,42 +138,22 @@ class emspay_klarnapaylater {
         'vat_percentage' => (int)2100,
         );
     }
-    $customer_data_not_in_customer_object = tep_db_fetch_array(tep_db_query("SELECT customers_dob, customers_gender FROM customers WHERE customers_id = '" . (int)$customer_id . "'"));
-
-    $customer = array(
-      'address'       => $order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city'],
-      'address_type'  => 'customer',
-      'birthdate'     => date("Y-m-d", strtotime($customer_data_not_in_customer_object['customers_dob'])),
-      'country'       => $order->customer['country']['iso_code_2'],
-      'email_address' => $order->customer['email_address'],
-      'first_name'    => $order->customer['firstname'],
-      'last_name'     => $order->customer['lastname'],
-      'gender'        => $order->customer['gender'] == "f" ? 'female' : 'male',
-      'postal_code'   => $order->customer['postcode'],
-      'phone_number'  => $order->customer['telephone'],
-      'ip_address'    => filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP),
-      'locale'        => 'nl_NL',  
-      );
-
-    global $languages_id;
-    // check if it's not english
-    $language_row = tep_db_fetch_array(tep_db_query("SELECT * FROM languages WHERE languages_id = '" . $languages_id . "'"));
-    if ($language_row['code'] == 'en')
-      $customer['locale'] = 'en_GB';
-    else
-      $customer['locale'] = $language_row['code'] . "_" . strtoupper($language_row['code']);
 
     $webhook_url = null;
     if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
       $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
-    $emspay_order = $this->emspay->emsCreateKlarnaPayLaterOrder( $insert_id,
-                                                         $order->info['total'], 
-                                                         STORE_NAME . " " . $insert_id, 
-                                                         $customer, 
-                                                         $webhook_url,
-                                                         tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ), 
-                                                         $order_lines );
+    $customer = $this->emspay->getCustomerInfo();
+    $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
+	    							   $order->info['total'],
+	    							   STORE_NAME . " " . $insert_id,
+	    							   $customer,
+	    							   $webhook_url,
+	    							   $this->id,
+	    							   tep_href_link( "ext/modules/payment/emspay/redir.php", '', 'SSL' ),
+	    							   null,
+	    							   $order_lines
+    								 );
 
     // change order status to value selected by merchant
     tep_db_query( "update ". TABLE_ORDERS. " set orders_status = " . intval( MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID ) . ", emspay_order_id = '" . $emspay_order['id']  . "' where orders_id = ". intval( $insert_id ) );
@@ -193,8 +171,10 @@ class emspay_klarnapaylater {
         $reason .= " " . $emspay_order['transactions'][0]['reason'];
       tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     }
-
-    return true;
+    else {
+	  tep_redirect( $emspay_order['transactions'][0]['payment_url'] );
+    }
+	return false;
   }
 
   function get_error() {
@@ -221,7 +201,7 @@ class emspay_klarnapaylater {
       "configuration_title" => 'Enable EMS Online Klarna Pay Later Module',
       "configuration_key" => 'MODULE_PAYMENT_EMSPAY_KLARNAPAYLATER_STATUS',
       "configuration_value" => 'False',
-      "configuration_description" => 'Do you want to accept Klarna Pay Later payments via ING psp?',
+      "configuration_description" => 'Do you want to accept Klarna Pay Later payments using EMS Online?',
       "configuration_group_id " => '6',
       "sort_order" => $sort_order,
       "set_function" => "tep_cfg_select_option(array('True', 'False'), ",
