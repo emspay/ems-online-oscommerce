@@ -14,7 +14,7 @@ osCommerce 1.0.0 EMS Online
 + Renamed Sofort to Klarna Pay Now
 + Renamed Klarna to Klarna Pay Later
 
-## Changes in version 1.0.3
+## Changes in version 1.1.0
 
 * Updated SDK
 * Add American Express
