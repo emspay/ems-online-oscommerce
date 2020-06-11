@@ -1,0 +1,4 @@
+<?php
+define( 'MODULE_PAYMENT_EMSPAY_WECHAT_TEXT_TITLE', 'WeChat' );
+define( 'MODULE_PAYMENT_EMSPAY_WECHAT_TEXT_DESCRIPTION', 'Bezahlen mit WeChat' );
+
