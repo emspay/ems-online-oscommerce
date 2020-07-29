@@ -62,7 +62,7 @@ class emspay_afterpay {
       }
     }
 
-    if ( $this->enabled == true ){
+    if ( $this->enabled ){
         $check_countries_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS'");
         $check_countries = tep_db_fetch_array( $check_countries_query );
         $countrylist = explode(",", str_replace(' ', '', $check_countries['configuration_value']));
