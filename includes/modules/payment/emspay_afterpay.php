@@ -62,11 +62,13 @@ class emspay_afterpay {
       }
     }
 
-    if ( $this->enabled ){
-        $check_countries_query = tep_db_query( "select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS'");
-        $check_countries = tep_db_fetch_array( $check_countries_query );
-        $countrylist = explode(",", str_replace(' ', '', $check_countries['configuration_value']));
-        if (!in_array($order->billing['country']['iso_code_2'], $countrylist)){
+    if ($this->enabled) {
+        $check_countries_query = tep_db_query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS'");
+        $check_countries = tep_db_fetch_array($check_countries_query);
+        $countrylist = array_map("trim", explode(',', $check_countries['configuration_value']));
+        if (empty($check_countries['configuration_value']) || in_array($order->billing['country']['iso_code_2'], $countrylist)) {
+            $this->enabled = true;
+        } else {
             $this->enabled = false;
         }
     }
@@ -267,7 +269,7 @@ class emspay_afterpay {
           "configuration_title" => 'Countries available for AfterPay',
           "configuration_key" => 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS',
           "configuration_value" => 'NL, BE',
-          "configuration_description" => 'To allow AfterPay to be used for any other country just add its country code (in ISO 2 standard) to the "Countries available for AfterPay" field. Example: BE, NL, FR',
+          "configuration_description" => 'To allow AfterPay to be used for any other country just add its country code (in ISO 2 standard) to the "Countries available for AfterPay" field.<br> Example: BE, NL, FR <br> If field is empty then AfterPay will be available for all countries.',
           "configuration_group_id " => '6',
           "sort_order" => $sort_order,
           "date_added " => 'now()',
