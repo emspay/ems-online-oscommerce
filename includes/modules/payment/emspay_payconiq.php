@@ -121,11 +121,12 @@ class emspay_payconiq {
     if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order) or $emspay_order['status'] == 'error' ) {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
-        $error_message = "Error placing emspay order";
-        if ($emspay_order['transactions'][0]['reason']) {
-            $error_message .= ": ".$emspay_order['transactions'][0]['reason'];
-        }
-        tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode($error_message), 'SSL' ));
+        $reason = "Error placing Payconiq order";
+        if (array_key_exists('error', $emspay_order) && array_key_exists('value', $emspay_order['error']))
+            $reason .= " " . $emspay_order['error']['value'];
+        if (array_key_exists('reason', $emspay_order['transactions'][0]))
+            $reason .= " " . $emspay_order['transactions'][0]['reason'];
+        tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     }
     else {
       tep_redirect( $emspay_order['transactions'][0]['payment_url'] );
