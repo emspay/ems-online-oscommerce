@@ -164,11 +164,8 @@ class emspay_ideal {
     if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order) or $emspay_order['status'] == 'error' ) {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
-        $reason = "Error placing IDEAL order";
-        if (array_key_exists('error', $emspay_order) && array_key_exists('value', $emspay_order['error']))
-            $reason .= " " . $emspay_order['error']['value'];
-        if (array_key_exists('reason', $emspay_order['transactions'][0]))
-            $reason .= " " . $emspay_order['transactions'][0]['reason'];
+        $reason = "Error placing IDEAL order ";
+        $reason.= $emspay_order['error']['value'] ?? $emspay_order['transactions'][0]['reason'] ?? null;
         tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     }
     else {

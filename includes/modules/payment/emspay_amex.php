@@ -122,10 +122,7 @@ class emspay_amex {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
         $reason = "Error placing American Express order";
-        if (array_key_exists('error', $emspay_order) && array_key_exists('value', $emspay_order['error']))
-            $reason .= " " . $emspay_order['error']['value'];
-        if (array_key_exists('reason', $emspay_order['transactions'][0]))
-            $reason .= " " . $emspay_order['transactions'][0]['reason'];
+        $reason.= $emspay_order['error']['value'] ?? $emspay_order['transactions'][0]['reason'] ?? null;
         tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     } else {
       tep_redirect( $emspay_order['transactions'][0]['payment_url'] );
