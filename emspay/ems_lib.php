@@ -163,6 +163,18 @@ class Ems_Services_Lib
         }
     }
 
+    public function getAdditionalAddresses()
+    {
+        global $order;
+
+        return [array_filter([
+        'address_type' => 'billing',
+        'address' => !empty($order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city']) ? (string)($order->customer['street_address'] . "\n" . $order->customer['postcode'] . ' ' . $order->customer['city']) : null,
+        'postal_code' => !empty($order->customer['postcode']) ? (string)$order->customer['postcode'] : null,
+        'country' => !empty($order->customer['country']['iso_code_2']) ? (string)$order->customer['country']['iso_code_2'] : null,
+    ])];
+    }
+
     public function getCustomerInfo($gender = '', $birthdate = '')
     {
 	  global $order, $languages_id, $customer_id;
@@ -194,6 +206,7 @@ class Ems_Services_Lib
 		  'ip_address' => !empty(filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP)) ? (string)filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP) : null,
 		  'gender' => $gender,
 		  'birthdate' => $birthdate,
+          'additional_addresses' => $this->getAdditionalAddresses()
 	  );
     }
 }
