@@ -62,6 +62,17 @@ class emspay_afterpay {
       }
     }
 
+    if ($this->enabled) {
+        $check_countries_query = tep_db_query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS'");
+        $check_countries = tep_db_fetch_array($check_countries_query);
+        $countrylist = array_map("trim", explode(',', $check_countries['configuration_value']));
+        if (empty($check_countries['configuration_value']) || in_array($order->billing['country']['iso_code_2'], $countrylist)) {
+            $this->enabled = true;
+        } else {
+            $this->enabled = false;
+        }
+    }
+
     if ( $order->info['currency'] != "EUR" ) {
       $this->enabled = false;
     }
@@ -196,7 +207,9 @@ class emspay_afterpay {
     if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order ) or $emspay_order['status'] == 'error' ) {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
-      tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( "Error placing emspay order" ), 'SSL' ) );
+        $reason = "Error placing AfterPay order ";
+        $reason .= $emspay_order['error']['value'] ?? $emspay_order['transactions'][0]['reason'] ?? null;
+        tep_redirect( tep_href_link( FILENAME_CHECKOUT_PAYMENT, 'error_message=' . urlencode( $reason ), 'SSL' ) );
     } else {
       tep_redirect( $emspay_order['transactions'][0]['payment_url'] );
     }
@@ -255,6 +268,18 @@ class emspay_afterpay {
     $sort_order++;
 
     $add_array = array(
+          "configuration_title" => 'Countries available for AfterPay',
+          "configuration_key" => 'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS',
+          "configuration_value" => 'NL, BE',
+          "configuration_description" => 'To allow AfterPay to be used for any other country just add its country code (in ISO 2 standard) to the "Countries available for AfterPay" field.<br> Example: BE, NL, FR <br> If field is empty then AfterPay will be available for all countries.',
+          "configuration_group_id " => '6',
+          "sort_order" => $sort_order,
+          "date_added " => 'now()',
+      );
+    tep_db_perform( TABLE_CONFIGURATION, $add_array );
+    $sort_order++;
+
+    $add_array = array(
         "configuration_title" => 'Payment Zone',
         "configuration_key" => 'MODULE_PAYMENT_EMSPAY_AFTERPAY_ZONE',
         "configuration_value" => 0,
@@ -291,6 +316,7 @@ class emspay_afterpay {
         'MODULE_PAYMENT_EMSPAY_AFTERPAY_TEST_APIKEY',
         'MODULE_PAYMENT_EMSPAY_AFTERPAY_ZONE',
         'MODULE_PAYMENT_EMSPAY_AFTERPAY_SORT_ORDER',
+        'MODULE_PAYMENT_EMSPAY_COUNTRIES_ACCESS',
     );
   }
 
