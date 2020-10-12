@@ -20,3 +20,7 @@ osCommerce 1.0.0 EMS Online
 * Add American Express
 * Add Tikkie Payment Request
 * Add WeChat
+
+## Changes in version 1.2.0
+
+* Added the ability for AfterPay to be available in the selected countries.
