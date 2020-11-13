@@ -5,7 +5,7 @@ This is the offical EMS Online plugin for OsCommerce
 By integrating your webshop with EMS Online you can accept payments from your customers in an easy and trusted manner with all relevant payment methods supported.
 
 ## Version number
-Version 1.2.0
+Version 1.2.1
 
 ## Pre-requisites to install the plug-ins: 
 - PHP v5.4 and above
@@ -63,12 +63,6 @@ This is the complete code:
     When your Klarna application was approved an extra test webshop was created for you to use in your test with Klarna. The name of this webshop starts with ‘TEST Klarna’.
      * Test IP adresses.  
           If you are testing Klarna and want to make sure that Klarna is not offered on your paypage to your customers yet, you can enter the IP adresses you use in your test. Klarna will only be available for those IP addresses. Seperate the addresses with a semicolon (';'). 
-
-6. Finally configure the webhook URL in the merchant portal.  
-  Go to ‘Settings’ > ‘Webshops’ and select the relevant webshop. Click ‘Change details’ to enter your webhook. 
-
-   Use the following webhook URL: `http(s)://www.example.com/ext/modules/payment/emspay/notify.php`.   
-  You can check whether the webhook URL is correct by visiting it via your web browser. If the message ‘Only work to do if the status changed’ appears, the URL is correct.  
 
    Note: if you opt for https (recommended!) then you must have a working https certificate.
 

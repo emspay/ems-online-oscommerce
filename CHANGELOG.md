@@ -24,3 +24,7 @@ osCommerce 1.0.0 EMS Online
 ## Changes in version 1.2.0
 
 * Added the ability for AfterPay to be available in the selected countries.
+
+## Changes in version 1.2.1
+
+* Removed WebHook option from all payments.
