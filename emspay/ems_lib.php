@@ -19,7 +19,7 @@ class Ems_Services_Lib
 
         $this->debugCurl   = false;
 
-        $this->plugin_version = 'osc-1.2.0';
+        $this->plugin_version = 'osc-1.2.1';
     }
 
     public function emsLog($contents)
@@ -104,7 +104,7 @@ class Ems_Services_Lib
 
     public function emsCreateOrder($orders_id, $total, $description, $customer, $webhook_url, $payment_id, $return_url, $issuer_id = null, $order_lines = [])
     {
-        $post = [
+        $post = array_filter([
             "type"              => "payment",
             "currency"          => "EUR",
             "amount"            => 100 * round($total, 2),
@@ -120,7 +120,7 @@ class Ems_Services_Lib
             'extra' => [
                 'plugin' => $this->plugin_version,
             ],
-        ];
+        ]);
 
 	  if ($return_url != null)
 		$post['return_url'] = $return_url;

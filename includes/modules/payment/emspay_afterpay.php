@@ -183,9 +183,7 @@ class emspay_afterpay {
     $customer_gender = !empty( $_SESSION['emspay_gender_id'] ) ? (string)$_SESSION['emspay_gender_id'] : null;
     $customer_birthdate = (string)implode( '-', [ $_SESSION['emspay_date_of_birth_day_id'], $_SESSION['emspay_month_of_birth_day_id'], $_SESSION['emspay_year_of_birth_day_id'] ] );
 
-    $webhook_url = null;
-    if ( MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True" )
-      $webhook_url = tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
+    $webhook_url = tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
     $customer = $this->emspay->getCustomerInfo( $customer_gender, $customer_birthdate );
     $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
@@ -204,7 +202,7 @@ class emspay_afterpay {
 
     $this->emspay->emsLog( $emspay_order );
 
-    if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order ) or $emspay_order['status'] == 'error' ) {
+    if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order ) or $emspay_order['status'] == 'error' or current($emspay_order['transactions'])['status'] == 'error' ) {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
         $reason = "Error placing AfterPay order ";

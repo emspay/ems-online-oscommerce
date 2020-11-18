@@ -113,17 +113,6 @@ class emspay {
     tep_db_perform( TABLE_CONFIGURATION, $add_array );
     $sort_order++;
 
-    $add_array = array(
-      "configuration_title" => 'Send in wehbhook URL',
-      "configuration_key" => 'MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK',
-      "configuration_value" => 'True',
-      "configuration_description" => 'Do you want to send in webhook URL on each order?',
-      "configuration_group_id " => '6',
-      "sort_order" => $sort_order,
-      "set_function" => "tep_cfg_select_option(array('True', 'False'), ",
-      "date_added " => 'now()',
-    );
-
     tep_db_perform( TABLE_CONFIGURATION, $add_array );
     $sort_order++;
 
@@ -245,7 +234,6 @@ class emspay {
     return array(
       'MODULE_PAYMENT_EMSPAY_STATUS',
       'MODULE_PAYMENT_EMSPAY_APIKEY',
-      'MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK',      
       'MODULE_PAYMENT_EMSPAY_NEW_STATUS_ID',
       'MODULE_PAYMENT_EMSPAY_PENDING_STATUS_ID',
       'MODULE_PAYMENT_EMSPAY_COMPLETE_STATUS_ID',

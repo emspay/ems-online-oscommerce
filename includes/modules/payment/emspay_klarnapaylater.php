@@ -139,9 +139,7 @@ class emspay_klarnapaylater {
         );
     }
 
-    $webhook_url = null;
-    if (MODULE_PAYMENT_EMSPAY_SEND_IN_WEBHOOK == "True")
-      $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
+    $webhook_url =  tep_href_link( "ext/modules/payment/emspay/notify.php", '', 'SSL' );
 
     $customer = $this->emspay->getCustomerInfo();
     $emspay_order = $this->emspay->emsCreateOrder( $insert_id,
