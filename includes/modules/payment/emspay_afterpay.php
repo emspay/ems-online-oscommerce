@@ -202,7 +202,7 @@ class emspay_afterpay {
 
     $this->emspay->emsLog( $emspay_order );
 
-    if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order ) or $emspay_order['status'] == 'error' ) {
+    if ( !is_array( $emspay_order ) or array_key_exists( 'error', $emspay_order ) or $emspay_order['status'] == 'error' or current($emspay_order['transactions'])['status'] == 'error' ) {
       // TODO: Remove this? I don't know if I like it removing orders, or make it optional
       $this->tep_remove_order( $insert_id, $restock = true );
         $reason = "Error placing AfterPay order ";
